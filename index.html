@@ -110,52 +110,38 @@
          * - 'up', 'left', 'right', 'down': Flick directions.
          * - Use 'null' to disable a flick direction.
          */
- const keyMap = {
+const keyMap = {
+    // ROW 1: VOWELS & MATRAS
+    // Kept at top to separate them from consonants.
     'row1': [
-        // VOWELS: Keeping alphabetical mostly, but prioritizing E/O on easy flicks
-        { key: 'অ', flicks: { base: 'অ', right: 'আ', up: 'ই', left: 'উ', down: 'ঋ' } }, 
-        // MATRAS: The most used key. 
-        // 'া' (Aa-kar) is Base. 'ে' (E-kar) is Right (very common). 'ি' (I-kar) is Left.
-        { key: 'া', flicks: { base: 'া', right: 'ে', left: 'ি', up: 'ু', down: 'ো' } },
-        // HASANTA/CONJUNCT KEY: Crucial for Juktakshar (e.g., ক + ্ + ত = ক্ত)
-        { key: '্', flicks: { base: '্', right: 'ঁ', up: 'ং', left: 'ঃ', down: '়' } },
+        { key: 'অ', flicks: { base: 'অ', up: 'ই', left: 'উ', right: 'এ', down: 'ও' } },
+        { key: 'আ', flicks: { base: 'আ', up: 'ঈ', left: 'ঊ', right: 'ঐ', down: 'ঔ' } },
+        { key: 'া', flicks: { base: 'া', up: 'ি', left: 'ু', right: 'ে', down: 'ো' } },
     ],
+
+    // ROW 2: THE "MVP" ROW (Highest Frequency Groups)
+    // These keys contain: Na, Da, Ra, La, Sha, Ba, Ma
     'row2': [
-        // K-GROUP
-        // Optimization: 'গ' (Ga) is more common than 'খ'. Moved 'গ' to Right.
-        { key: 'ক', flicks: { base: 'ক', right: 'গ', left: 'খ', up: 'ঘ', down: 'ঙ' } },
-        // CH-GROUP
-        // Optimization: 'জ' (Ja) is heavily used (Jonno, Je). Moved to Right.
-        { key: 'চ', flicks: { base: 'চ', right: 'জ', left: 'ছ', up: 'ঝ', down: 'ঞ' } },
-        // T-GROUP (Retroflex) - Lower frequency group, so mapping matters less
-        { key: 'ট', flicks: { base: 'ট', right: 'ড', left: 'ঠ', up: 'ঢ', down: 'ণ' } },
+        { key: 'ত', flicks: { base: 'ত', left: 'থ', right: 'দ', up: 'ধ', down: 'ন' } },
+        { key: 'য', flicks: { base: 'য', left: 'র', right: 'ল', up: 'শ', down: 'ষ' } },
+        { key: 'প', flicks: { base: 'প', left: 'ফ', right: 'ব', up: 'ভ', down: 'ম' } },
     ],
+
+    // ROW 3: SECONDARY CONSONANTS
+    // These keys contain: Ka, Ga, Ja, and the Retroflex T
     'row3': [
-        // T-GROUP (Dental) - HIGH FREQUENCY ZONE
-        // MAJOR FIX: 'ন' (Na) moved from Down to Right (Easiest flick). 
-        // 'ত' stays Base. 'দ' (Da) is Left.
-        { key: 'ত', flicks: { base: 'ত', right: 'ন', left: 'দ', up: 'থ', down: 'ধ' } },
-        
-        // P-GROUP
-        // MAJOR FIX: 'ব' (Ba) is much more common than 'প'. 
-        // Swapped: 'ব' is now BASE. 'ম' (Ma) is Right. 'প' is Left.
-        { key: 'ব', flicks: { base: 'ব', right: 'ম', left: 'প', up: 'ভ', down: 'ফ' } },
-        
-        // THE "HOT" KEY (Semi-vowels + Sibilants)
-        // MAJOR FIX: 'র' (Ra) is #1 freq, so it becomes BASE.
-        // 'ল' (La) is Right. 'স' (Sa) is Left. 'হ' (Ha) is Up.
-        // 'য' (Ya) is rare in comparison, moved Down.
-        { key: 'র', flicks: { base: 'র', right: 'ল', left: 'স', up: 'হ', down: 'য' } },
+        { key: 'ক', flicks: { base: 'ক', left: 'খ', right: 'গ', up: 'ঘ', down: 'ঙ' } },
+        { key: 'চ', flicks: { base: 'চ', left: 'ছ', right: 'জ', up: 'ঝ', down: 'ঞ' } },
+        { key: 'ট', flicks: { base: 'ট', left: 'ঠ', right: 'ড', up: 'ঢ', down: 'ণ' } },
     ],
+
+    // ROW 4: FUNCTION KEYS
     'row4': [
-        // SH-GROUP & Special Chars
-        // 'শ' (Talibya-sha) and 'ষ' (Petkata-sha) need a home.
-        { key: 'শ', flicks: { base: 'শ', right: 'ষ', up: 'ড়', left: 'ঢ়', down: 'য়' } },
+        { key: 'abc', flicks: { base: 'abc' } }, 
         { key: ' ', flicks: { base: ' ' } }, 
         { key: '⌫', flicks: { base: 'backspace' } }, 
     ]
 };
-
 
         const FLICK_THRESHOLD = 30; // Min pixels to drag to register as a flick
 
