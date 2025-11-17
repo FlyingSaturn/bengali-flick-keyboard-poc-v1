@@ -110,56 +110,29 @@
          * - 'up', 'left', 'right', 'down': Flick directions.
          * - Use 'null' to disable a flick direction.
          */
-const keyMap = {
-    // ROW 1: MODIFIERS & VOWELS
-    'row1': [
-        // KEY 1: VOWELS (Optimized for top 5 usage)
-        // Base: A. Right: Aa. Left: I. Up: U. Down: E. 
-        // (Sacrificed rare vowels like Oi/Ou/Ri for speed)
-        { key: 'অ', flicks: { base: 'অ', right: 'আ', left: 'ই', up: 'উ', down: 'এ' } },
+        const keyMap = {
+            'row1': [
+                { key: 'অ', flicks: { base: 'অ', up: 'ই', left: 'উ', right: 'এ', down: 'ও' } },
+                { key: '্', flicks: { base: '্', up: 'স', left: 'ঁ', right: 'ং', down: 'হ' } },
+                { key: 'া', flicks: { base: 'া', up: 'ি', left: 'ু', right: 'ে', down: 'ো' } },
+            ],
+            'row2': [
+                { key: 'ক', flicks: { base: 'ক', left: 'খ', right: 'গ', up: 'ঘ', down: 'ঙ' } },
+                { key: 'চ', flicks: { base: 'চ', left: 'ছ', right: 'জ', up: 'ঝ', down: 'ঞ' } },
+                { key: 'ট', flicks: { base: 'ট', left: 'ঠ', right: 'ড', up: 'ঢ', down: 'ণ' } },
+            ],
+            'row3': [
+                { key: 'ত', flicks: { base: 'ত', left: 'থ', right: 'দ', up: 'ধ', down: 'ন' } },
+                { key: 'প', flicks: { base: 'প', left: 'ফ', right: 'ব', up: 'ভ', down: 'ম' } },
+                { key: 'য', flicks: { base: 'য', left: 'র', right: 'ল', up: 'শ', down: 'ষ' } },
+            ],
+            'row4': [
+                { key: 'abc', flicks: { base: 'abc' } }, // Mode switch (not implemented)
+                { key: ' ', flicks: { base: ' ' } }, // Spacebar
+                { key: '⌫', flicks: { base: 'backspace' } }, // Backspace
+            ]
+        };
 
-        // KEY 2: THE "SPECIALS" KEY (Formerly 'Aa')
-        // Base: Hasanta (Critical for conjuncts).
-        // Right: Ha (High Freq). Left: Sa (High Freq). Down: Anusvara.
-        { key: '্', flicks: { base: '্', right: 'হ', left: 'স', up: 'ঁ', down: 'ং' } },
-
-        // KEY 3: MATRAS (Untouched)
-        { key: 'া', flicks: { base: 'া', up: 'ি', left: 'ু', right: 'ে', down: 'ো' } },
-    ],
-
-    // ROW 2: THE "HOME ROW" (Highest Frequency Groups)
-    // Placed here for easiest thumb reach.
-    'row2': [
-        // K-GROUP: Placed Left. 'Ka' is #2 Consonant. 'Ga' (Right flick) is easy.
-        { key: 'ক', flicks: { base: 'ক', left: 'খ', right: 'গ', up: 'ঘ', down: 'ঙ' } },
-
-        // T-DENTAL: Placed Center. 'Na' (Down) and 'Da' (Right) are very high freq.
-        { key: 'ত', flicks: { base: 'ত', left: 'থ', right: 'দ', up: 'ধ', down: 'ন' } },
-
-        // YA-GROUP: Placed Right. Contains 'Ra' (Left flick) - The #1 Consonant.
-        // Flicking 'Left' (inwards) with the right thumb is extremely fast for 'Ra'.
-        { key: 'য', flicks: { base: 'য', left: 'র', right: 'ল', up: 'শ', down: 'ষ' } },
-    ],
-
-    // ROW 3: SECONDARY ROW (Medium/Low Frequency)
-    'row3': [
-        // T-RETROFLEX: Lowest frequency. Tucked away in the corner.
-        { key: 'ট', flicks: { base: 'ট', left: 'ঠ', right: 'ড', up: 'ঢ', down: 'ণ' } },
-
-        // P-GROUP: Placed Center. 'Ba' (Right) and 'Ma' (Down) are high freq.
-        { key: 'প', flicks: { base: 'প', left: 'ফ', right: 'ব', up: 'ভ', down: 'ম' } },
-
-        // CH-GROUP: Placed Right. 'Ja' (Right) is the only heavy hitter here.
-        { key: 'চ', flicks: { base: 'চ', left: 'ছ', right: 'জ', up: 'ঝ', down: 'ঞ' } },
-    ],
-
-    // ROW 4: FUNCTIONAL
-    'row4': [
-        { key: 'abc', flicks: { base: 'abc' } }, 
-        { key: ' ', flicks: { base: ' ' } }, 
-        { key: '⌫', flicks: { base: 'backspace' } }, 
-    ]
-};
 
         const FLICK_THRESHOLD = 30; // Min pixels to drag to register as a flick
 
