@@ -111,27 +111,48 @@
          * - Use 'null' to disable a flick direction.
          */
         const keyMap = {
-            'row1': [
-                { key: 'অ', flicks: { base: 'অ', up: 'ই', left: 'উ', right: 'এ', down: 'ও' } },
-                { key: '্', flicks: { base: '্', up: 'স', left: 'ঁ', right: 'ং', down: 'হ' } },
-                { key: 'া', flicks: { base: 'া', up: 'ি', left: 'ু', right: 'ে', down: 'ো' } },
-            ],
-            'row2': [
-                { key: 'ক', flicks: { base: 'ক', left: 'খ', right: 'গ', up: 'ঘ', down: 'ঙ' } },
-                { key: 'চ', flicks: { base: 'চ', left: 'ছ', right: 'জ', up: 'ঝ', down: 'ঞ' } },
-                { key: 'ট', flicks: { base: 'ট', left: 'ঠ', right: 'ড', up: 'ঢ', down: 'ণ' } },
-            ],
-            'row3': [
-                { key: 'ত', flicks: { base: 'ত', left: 'থ', right: 'দ', up: 'ধ', down: 'ন' } },
-                { key: 'প', flicks: { base: 'প', left: 'ফ', right: 'ব', up: 'ভ', down: 'ম' } },
-                { key: 'য', flicks: { base: 'য', left: 'র', right: 'ল', up: 'শ', down: 'ষ' } },
-            ],
-            'row4': [
-                { key: 'abc', flicks: { base: 'abc' } }, // Mode switch (not implemented)
-                { key: ' ', flicks: { base: ' ' } }, // Spacebar
-                { key: '⌫', flicks: { base: 'backspace' } }, // Backspace
-            ]
-        };
+    // ROW 1: The Hard Consonants
+    'row1': [
+        // Block 1: Ka Group
+        { key: 'ক', flicks: { base: 'ক', left: 'খ', right: 'ঘ', up: 'গ', down: 'ঙ' } },
+        // Block 2: Cha Group
+        { key: 'চ', flicks: { base: 'চ', left: 'ছ', right: 'ঝ', up: 'জ', down: 'ঞ' } },
+        // Block 3: Tta Group
+        { key: 'ট', flicks: { base: 'ট', left: 'ঠ', right: 'ঢ', up: 'ড', down: 'ণ' } },
+        // Block 4: Ta Group
+        { key: 'ত', flicks: { base: 'ত', left: 'থ', right: 'ধ', up: 'দ', down: 'ন' } },
+        // Block 5: Pa Group
+        { key: 'প', flicks: { base: 'প', left: 'ফ', right: 'ভ', up: 'ব', down: 'ম' } }
+    ],
+
+    // ROW 2: Vowels & Soft Consonants
+    'row2': [
+        // Block 6: Short Vowels
+        { key: 'অ', flicks: { base: 'অ', left: 'ই', right: 'এ', up: 'উ', down: 'ও' } },
+        // Block 7: Long Vowels
+        { key: 'আ', flicks: { base: 'আ', left: 'ঈ', right: 'ঐ', up: 'ঊ', down: 'ঔ' } },
+        // Block 8: Y-R-L-V
+        { key: 'য', flicks: { base: 'য', left: 'র', right: 'য়', up: 'ল', down: 'ব' } },
+        // Block 9: Ha + Sibilants
+        { key: 'হ', flicks: { base: 'হ', left: 'শ', right: 'স', up: 'ষ', down: '়' } }, // Down is Nukta
+        // Block 10: Modifiers
+        { key: '্', flicks: { base: '্', left: 'ৎ', right: 'ং', up: 'ঁ', down: 'ঃ' } } // Left is Khanda Ta
+    ],
+
+    // ROW 3: Utility & Power
+    'row3': [
+        // Block 11: Power Block (Conjuncts)
+        { key: 'ক্ষ', flicks: { base: 'ক্ষ', left: 'জ্ঞ', right: 'র্', up: 'ত্র', down: '৳' } }, // Down is Wildcard (Taka)
+        // Block 12: Punctuation
+        { key: '।', flicks: { base: '।', left: '.', right: ',', up: '?', down: '-' } },
+        // SPACE
+        { key: 'SPACE', width: '1.5', flicks: { base: ' ' } },
+        // Backspace
+        { key: '⌫', flicks: { base: 'backspace' } },
+        // Enter
+        { key: '⏎', flicks: { base: 'enter' } }
+    ]
+};
 
 
         const FLICK_THRESHOLD = 30; // Min pixels to drag to register as a flick
