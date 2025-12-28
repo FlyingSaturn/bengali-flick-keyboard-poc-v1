@@ -3,445 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Bengali Flick Keyboard POC</title>
-    <!-- Load Tailwind CSS -->
+    <title>Bengali Flick Keyboard Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /*
-        CRITICAL: These CSS rules prevent the browser from interfering
-        with our touch gestures (like scrolling or "select all").
-        */
-        body, html {
-            overscroll-behavior: none;
-            touch-action: none;
-            height: 100%;
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-        }
-        .keyboard-key {
-            touch-action: none; /* Disable browser gestures on keys */
-            user-select: none; /* Disable text selection */
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent; /* Disable tap flash */
-        }
-        /* Custom font for Bengali characters */
+        /* Prevent browser gestures/selection */
+        body, html { overscroll-behavior: none; touch-action: none; height: 100%; margin: 0; font-family: 'Inter', sans-serif; }
+        .keyboard-key { -webkit-tap-highlight-color: transparent; }
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;700&display=swap');
-        body {
-            font-family: 'Noto Sans Bengali', sans-serif;
-        }
-        #text-display {
-            font-family: 'Noto Sans Bengali', sans-serif;
+        body { font-family: 'Noto Sans Bengali', sans-serif; }
+        
+        /* The Grid Layout: 5 Columns */
+        #keyboard-container {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr 1.25fr 1.25fr 1fr; /* Sidebars are smaller */
+            gap: 6px;
+            padding: 6px;
         }
 
-        /* Flick preview styles */
+        /* Flick Preview Popup */
         #flick-preview {
-            position: absolute;
-            display: none; /* Hidden by default */
-            grid-template-areas:
-                ". up ."
-                "left base right"
-                ". down .";
-            grid-template-rows: 1fr 1fr 1fr;
-            grid-template-columns: 1fr 1fr 1fr;
-            width: 180px; /* 3x key size */
-            height: 180px; /* 3x key size */
-            pointer-events: none; /* Don't let the preview steal touch events */
-            z-index: 100;
+            position: absolute; display: none; 
+            grid-template-areas: ". up ." "left base right" ". down .";
+            width: 160px; height: 160px; pointer-events: none; z-index: 50;
         }
+        .flick-cell { display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; background: rgba(255,255,255,0.9); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .flick-cell.active { background: #3b82f6; color: white; transform: scale(1.1); }
         
-        /* Styles for the flick character popups */
-        .flick-char {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-            color: black;
-            border: 1px solid #ccc;
-            border-radius: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: 500;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        
-        .flick-char-base { grid-area: base; background-color: #e0e0e0; }
-        .flick-char-up { grid-area: up; }
-        .flick-char-left { grid-area: left; }
-        .flick-char-right { grid-area: right; }
-        .flick-char-down { grid-area: down; }
-        
-        /* Highlight for the active flick direction */
-        .flick-char.highlight {
-            background-color: #3b82f6; /* blue-500 */
-            color: white;
-            transform: scale(1.1);
-            transition: transform 0.05s ease-out;
-        }
+        /* Grid Area Assignments */
+        .area-up { grid-area: up; } .area-left { grid-area: left; } .area-right { grid-area: right; } .area-down { grid-area: down; } .area-base { grid-area: base; background: #e5e7eb; }
     </style>
 </head>
-<body class="bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col h-full">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col h-full">
 
-    <!-- 1. The Text Display Area -->
-    <div class="flex-1 p-4 overflow-auto">
-        <div id="text-display" class="w-full h-full bg-white dark:bg-gray-800 rounded-lg p-4 text-2xl" contenteditable="true"></div>
+    <div class="flex-1 p-4">
+        <div id="text-display" class="w-full h-full bg-white dark:bg-gray-800 rounded-xl p-6 text-3xl shadow-inner border border-gray-200 dark:border-gray-700 whitespace-pre-wrap"></div>
     </div>
 
-    <!-- 2. The Flick Preview (Hidden) -->
-    <div id="flick-preview" class="grid">
-        <div id="flick-up" class="flick-char flick-char-up"></div>
-        <div id="flick-left" class="flick-char flick-char-left"></div>
-        <div id="flick-base" class="flick-char flick-char-base"></div>
-        <div id="flick-right" class="flick-char flick-char-right"></div>
-        <div id="flick-down" class="flick-char flick-char-down"></div>
+    <div id="flick-preview">
+        <div class="flick-cell area-up"></div>
+        <div class="flick-cell area-left"></div>
+        <div class="flick-cell area-base"></div>
+        <div class="flick-cell area-right"></div>
+        <div class="flick-cell area-down"></div>
     </div>
 
-    <!-- 3. The Keyboard Container -->
-    <div id="keyboard-container" class="bg-gray-300 dark:bg-gray-800 p-2 w-full shadow-lg">
-        <!-- Keyboard rows will be generated by JS -->
-    </div>
+    <div id="keyboard-container" class="bg-gray-200 dark:bg-gray-800 shadow-2xl pb-6">
+        </div>
 
     <script>
-        // --- CONFIGURATION ---
-        const MAATRA_MAP = {
-            'অ': '',   // No maatra for short 'a' (inherent)
-            'আ': 'া',
-            'ই': 'ি',
-            'ঈ': 'ী',
-            'উ': 'ু',
-            'ঊ': 'ূ',
-            'ঋ': 'ৃ',
-            'এ': 'ে',
-            'ঐ': 'ৈ',
-            'ও': 'ো',
-            'ঔ': 'ৌ'
-        };
-        /**
-         * This is the core logic map.
-         * 'key': The character displayed on the key.
-         * 'flicks': An object mapping direction to the flicked character.
-         * - 'base': The character for a simple tap.
-         * - 'up', 'left', 'right', 'down': Flick directions.
-         * - Use 'null' to disable a flick direction.
-         */
+        // --- 1. THE DATA (The Map) ---
         const keyMap = {
-    // ROW 1: The Hard Consonants
-    'row1': [
-        // Ka Group
-        { key: 'ক', flicks: { base: 'ক', left: 'খ', up: 'গ', right: 'ঘ', down: 'ঙ' } },
-        // Cha Group
-        { key: 'চ', flicks: { base: 'চ', left: 'ছ', up: 'জ', right: 'ঝ', down: 'ঞ' } },
-        // Tta Group
-        { key: 'ট', flicks: { base: 'ট', left: 'ঠ', up: 'ড', right: 'ঢ', down: 'ণ' } }
-    ],
-
-    // ROW 2: Vowels & Soft Consonants
-    'row2': [
-        // Short Vowels
-        { key: 'অ', flicks: { base: 'অ', left: 'ই', up: 'উ', right: 'এ', down: 'ও' } },
-        // Modifiers
-        { key: '্', flicks: { base: '্', left: 'ৎ', up: 'ং', right: 'ঃ', down: 'ঁ' } }, // Left is Khanda Ta
-        // Long Vowels
-        { key: 'আ', flicks: { base: 'আ', left: 'ঈ', up: 'ঊ', right: 'ঐ', down: 'ঔ' } } 
-    ],
-
-    // ROW 3: Utility & Power
-    'row3': [
-        // Ta Group
-        { key: 'ত', flicks: { base: 'ত', left: 'থ', up: 'দ', right: 'ধ', down: 'ন' } },
-        // Pa Group
-        { key: 'প', flicks: { base: 'প', left: 'ফ', up: 'ব', right: 'ভ', down: 'ম' } },
-        // Y-R-L-V
-        { key: 'য', flicks: { base: 'য', left: 'র', up: 'ল', right: 'য়', down: 'ঋ' } }
-/*
-        // SPACE
-        { key: 'SPACE', width: '1.5', flicks: { base: ' ' } },
-        // Backspace
-        { key: '⌫', flicks: { base: 'backspace' } },
-        // Enter
-        { key: '⏎', flicks: { base: 'enter' } }
-        */
-    ],
-
-    'row4': [
-        // Conjuncts
-        { key: 'ক্ষ', flicks: { base: 'ক্ষ', left: 'ত্র', up: 'জ্ঞ', right: 'র্', down: null } },
-        // { key: 'ক্ষ', flicks: { base: 'ক্ষ', left: 'জ্ঞ', up: 'ত্র', right: 'র্', down: 'ৱ' } },
-        // Ha + Sibilants
-        { key: 'হ', flicks: { base: 'হ', left: 'শ', up: 'ষ', right: 'স', down: '়' } }, // Down is Nukta        
-        // Block 12: Punctuation
-        { key: '।', flicks: { base: '।', left: '.', up: '?', right: ',', down: '-' } },
-    ]
-    
-};
-
-
-        const FLICK_THRESHOLD = 30; // Min pixels to drag to register as a flick
-
-        // --- STATE VARIABLES ---
-        let activeKeyElement = null;
-        let activeKeyData = null;
-        let startX = 0;
-        let startY = 0;
-        let currentFlickDirection = 'base';
-
-        // --- DOM ELEMENTS ---
-        const textDisplay = document.getElementById('text-display');
-        const keyboardContainer = document.getElementById('keyboard-container');
-        const flickPreview = document.getElementById('flick-preview');
-        
-        const flickChars = {
-            up: document.getElementById('flick-up'),
-            left: document.getElementById('flick-left'),
-            base: document.getElementById('flick-base'),
-            right: document.getElementById('flick-right'),
-            down: document.getElementById('flick-down'),
+            'row1': [
+                { key: '←', type: 'func', flicks: { base: 'cursorLeft' } },
+                { key: 'ক', type: 'char', flicks: { base: 'ক', left: 'খ', up: 'গ', right: 'ঘ', down: 'ঙ' } },
+                { key: 'চ', type: 'char', flicks: { base: 'চ', left: 'ছ', up: 'জ', right: 'ঝ', down: 'ঞ' } },
+                { key: 'ট', type: 'char', flicks: { base: 'ট', left: 'ঠ', up: 'ড', right: 'ঢ', down: 'ণ' } },
+                { key: '⌫', type: 'func', flicks: { base: 'backspace' } }
+            ],
+            'row2': [
+                { key: '→', type: 'func', flicks: { base: 'cursorRight' } },
+                { key: 'অ', type: 'char', flicks: { base: 'অ', left: 'ই', up: 'উ', right: 'এ', down: 'ও' } },
+                { key: '্', type: 'char', flicks: { base: '্', left: 'ৎ', up: 'ং', right: 'ঃ', down: 'ঁ' } },
+                { key: 'আ', type: 'char', flicks: { base: 'আ', left: 'ঈ', up: 'ঊ', right: 'ঐ', down: 'ঔ' } },
+                { key: '␣', type: 'func', label: 'Space', flicks: { base: ' ' } }
+            ],
+            'row3': [
+                { key: 'abc', type: 'func', flicks: { base: 'mode' } },
+                { key: 'ত', type: 'char', flicks: { base: 'ত', left: 'থ', up: 'দ', right: 'ধ', down: 'ন' } },
+                { key: 'প', type: 'char', flicks: { base: 'প', left: 'ফ', up: 'ব', right: 'ভ', down: 'ম' } },
+                { key: 'য', type: 'char', flicks: { base: 'য', left: 'র', up: 'ল', right: 'য়', down: 'ঋ' } },
+                { key: '⏎', type: 'func', flicks: { base: 'enter' } }
+            ],
+            'row4': [
+                { key: '123', type: 'func', flicks: { base: 'num' } },
+                { key: 'ক্ষ', type: 'char', flicks: { base: 'ক্ষ', left: 'ত্র', up: 'জ্ঞ', right: 'র্', down: null } },
+                { key: 'হ', type: 'char', flicks: { base: 'হ', left: 'শ', up: 'ষ', right: 'স', down: '়' } },
+                { key: '।', type: 'char', flicks: { base: '।', left: '.', up: '?', right: ',', down: '-' } },
+                { key: '🌐', type: 'func', flicks: { base: 'globe' } }
+            ]
         };
 
-        // --- CORE FUNCTIONS ---
-
-        /**
-         * Renders the keyboard from the keyMap configuration.
-         */
-        function renderKeyboard() {
-            keyboardContainer.innerHTML = ''; // Clear existing
-            
-            for (const rowKey in keyMap) {
-                const rowData = keyMap[rowKey];
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'flex w-full justify-center gap-1.5 my-1.5';
-
-                rowData.forEach(keyData => {
-                    const keyEl = document.createElement('button');
-                    keyEl.className = 'keyboard-key h-14 flex-1 rounded-lg shadow-sm active:shadow-inner active:scale-95 transition-transform bg-white dark:bg-gray-600 text-xl font-medium';
-                    
-                    // Special styling for spacebar and non-char keys
-                    if (keyData.key === ' ') keyEl.classList.add('flex-grow-[4]');
-                    if (keyData.key === '⌫' || keyData.key === 'abc') {
-                        keyEl.classList.add('flex-grow-[1.5]');
-                        keyEl.classList.add('text-sm');
-                    }
-
-                    keyEl.textContent = keyData.key;
-                    
-                    // Store the key's data directly on the element
-                    keyEl.dataset.key = keyData.key;
-                    
-                    rowDiv.appendChild(keyEl);
-                });
-                keyboardContainer.appendChild(rowDiv);
-            }
-        }
-
-        /**
-         * Shows the flick preview UI centered on the active key.
-         */
-        function showFlickPreview() {
-            if (!activeKeyData || !activeKeyElement) return;
-
-            const flicks = activeKeyData.flicks;
-            const keyRect = activeKeyElement.getBoundingClientRect();
-
-            // Populate preview chars
-            flickChars.base.textContent = flicks.base || '';
-            flickChars.up.textContent = flicks.up || '';
-            flickChars.left.textContent = flicks.left || '';
-            flickChars.right.textContent = flicks.right || '';
-            flickChars.down.textContent = flicks.down || '';
-
-            // Show/hide based on if flick is available
-            flickChars.up.style.visibility = flicks.up ? 'visible' : 'hidden';
-            flickChars.left.style.visibility = flicks.left ? 'visible' : 'hidden';
-            flickChars.right.style.visibility = flicks.right ? 'visible' : 'hidden';
-            flickChars.down.style.visibility = flicks.down ? 'visible' : 'hidden';
-            
-            // Calculate position
-            // Center the 180x180 preview box on the key
-            const previewWidth = 180;
-            const previewHeight = 180;
-            const x = keyRect.left + (keyRect.width / 2) - (previewWidth / 2);
-            const y = keyRect.top - previewHeight; // Position above the key row
-
-            flickPreview.style.left = `${x}px`;
-            flickPreview.style.top = `${y}px`;
-            flickPreview.style.display = 'grid'; // Show it
-            
-            updateFlickHighlight('base'); // Highlight base key initially
-        }
-
-        /**
-         * Hides the flick preview UI.
-         */
-        function hideFlickPreview() {
-            flickPreview.style.display = 'none';
-        }
-
-        /**
-         * Updates the visual highlight in the flick preview.
-         */
-        function updateFlickHighlight(direction) {
-            currentFlickDirection = direction;
-            // Remove highlight from all
-            Object.values(flickChars).forEach(el => el.classList.remove('highlight'));
-            // Add highlight to the current one
-            if (flickChars[direction] && flickChars[direction].style.visibility !== 'hidden') {
-                flickChars[direction].classList.add('highlight');
-            }
-        }
-
-        /**
-         * Calculates the flick direction based on touch deltas.
-         */
-        function getFlickDirection(deltaX, deltaY) {
-            const absDeltaX = Math.abs(deltaX);
-            const absDeltaY = Math.abs(deltaY);
-
-            // Prioritize the direction of greatest movement
-            if (absDeltaX > absDeltaY) {
-                // Horizontal flick
-                if (deltaX > FLICK_THRESHOLD) return 'right';
-                if (deltaX < -FLICK_THRESHOLD) return 'left';
-            } else {
-                // Vertical flick
-                if (deltaY > FLICK_THRESHOLD) return 'down';
-                if (deltaY < -FLICK_THRESHOLD) return 'up';
-            }
-            
-            // If no threshold was met, it's a tap
-            return 'base';
-        }
-
-        // 2. HELPER: check if a character is a Bengali Consonant
-        function isConsonant(char) {
-            if (!char) return false;
-            const code = char.charCodeAt(0);
-            // Bengali Consonant Range: Ka (0995) to Ha (09B9), plus Rra/Rh/Yya (09DC-09DF)
-            return (code >= 0x0995 && code <= 0x09B9) || (code >= 0x09DC && code <= 0x09DF);
-        }
+        const MAATRA_MAP = { 'অ':'', 'আ':'া', 'ই':'ি', 'ঈ':'ী', 'উ':'ু', 'ঊ':'ূ', 'ঋ':'ৃ', 'এ':'ে', 'ঐ':'ৈ', 'ও':'ো', 'ঔ':'ৌ' };
         
-        /**
-         * Appends text to the display or handles special keys.
-         */
-        function commitText(char) {
-            if (char === 'backspace') {
-                const text = textDisplay.textContent;
-                // Use Array.from to handle emojis/surrogate pairs correctly if needed, 
-                // but slice is fine for basic Bengali
-                textDisplay.textContent = text.slice(0, -1);
-                return;
-            } 
+        // --- 2. RENDER ENGINE (Draws the keys) ---
+        const container = document.getElementById('keyboard-container');
+        const textDisplay = document.getElementById('text-display');
+        const preview = document.getElementById('flick-preview');
+        const previewCells = {
+            up: preview.querySelector('.area-up'),
+            down: preview.querySelector('.area-down'),
+            left: preview.querySelector('.area-left'),
+            right: preview.querySelector('.area-right'),
+            base: preview.querySelector('.area-base')
+        };
+
+        function render() {
+            container.innerHTML = '';
+            const allKeys = [...keyMap.row1, ...keyMap.row2, ...keyMap.row3, ...keyMap.row4];
+
+            allKeys.forEach(data => {
+                const btn = document.createElement('div');
+                // Base Styling
+                btn.className = `keyboard-key relative h-14 rounded-lg flex items-center justify-center select-none transition-transform active:scale-95 ${
+                    data.type === 'func' 
+                    ? 'bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold text-sm' 
+                    : 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-md text-2xl font-medium'
+                }`;
+                
+                // Label
+                const label = document.createElement('span');
+                label.innerText = data.label || data.key;
+                btn.appendChild(label);
+
+                // Corner Hints (Only for Char keys)
+                if (data.type === 'char') {
+                    if (data.flicks.left) createHint(btn, data.flicks.left, 'left-1 top-1/2 -translate-y-1/2');
+                    if (data.flicks.right) createHint(btn, data.flicks.right, 'right-1 top-1/2 -translate-y-1/2');
+                    if (data.flicks.up) createHint(btn, data.flicks.up, 'top-0.5 left-1/2 -translate-x-1/2');
+                    if (data.flicks.down) createHint(btn, data.flicks.down, 'bottom-0.5 left-1/2 -translate-x-1/2');
+                }
+
+                // Attach Physics
+                attachTouch(btn, data);
+                container.appendChild(btn);
+            });
+        }
+
+        function createHint(parent, char, posClass) {
+            const s = document.createElement('span');
+            s.className = `absolute text-[10px] text-gray-400 dark:text-gray-300 ${posClass}`;
+            s.innerText = char;
+            parent.appendChild(s);
+        }
+
+        // --- 3. PHYSICS ENGINE (Touch Handling) ---
+        let activeKey = null;
+        let startX, startY;
+        const THRESHOLD = 25;
+
+        function attachTouch(el, data) {
+            el.addEventListener('touchstart', e => {
+                e.preventDefault();
+                activeKey = data;
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                
+                // Show preview only for char keys with flicks
+                if (data.type === 'char') showPreview(el, data);
+                el.style.backgroundColor = '#d1d5db'; // Press effect
+            }, {passive: false});
+
+            el.addEventListener('touchmove', e => {
+                if (!activeKey) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                const dx = touch.clientX - startX;
+                const dy = touch.clientY - startY;
+                const dir = getDirection(dx, dy);
+                
+                if (data.type === 'char') highlightPreview(dir);
+            }, {passive: false});
+
+            el.addEventListener('touchend', e => {
+                if (!activeKey) return;
+                e.preventDefault();
+                const touch = e.changedTouches[0];
+                const dx = touch.clientX - startX;
+                const dy = touch.clientY - startY;
+                const dir = getDirection(dx, dy);
+                
+                const char = data.flicks[dir] || data.flicks.base;
+                handleInput(char);
+
+                // Reset
+                hidePreview();
+                el.style.backgroundColor = ''; 
+                activeKey = null;
+            });
+        }
+
+        function getDirection(dx, dy) {
+            if (Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return 'base';
+            if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'right' : 'left';
+            return dy > 0 ? 'down' : 'up';
+        }
+
+        // --- 4. PREVIEW UI ---
+        function showPreview(el, data) {
+            const rect = el.getBoundingClientRect();
+            preview.style.left = (rect.left + rect.width/2 - 80) + 'px';
+            preview.style.top = (rect.top - 170) + 'px'; // Float above
+            preview.style.display = 'grid';
+
+            previewCells.base.innerText = data.flicks.base;
+            previewCells.up.innerText = data.flicks.up || '';
+            previewCells.left.innerText = data.flicks.left || '';
+            previewCells.right.innerText = data.flicks.right || '';
+            previewCells.down.innerText = data.flicks.down || '';
             
-            if (char === 'enter') {
-                textDisplay.textContent += '\n';
-                return;
-            }
-        
+            highlightPreview('base');
+        }
+
+        function highlightPreview(dir) {
+            Object.values(previewCells).forEach(c => c.classList.remove('active'));
+            if (previewCells[dir] && previewCells[dir].innerText) previewCells[dir].classList.add('active');
+        }
+
+        function hidePreview() {
+            preview.style.display = 'none';
+        }
+
+        // --- 5. LOGIC ENGINE (Typing) ---
+        function handleInput(char) {
             if (!char) return;
             
-            // Get the last character typed
-            const currentText = textDisplay.textContent;
-            const lastChar = currentText.slice(-1);
-        
-            // Check if the input is a Vowel AND the previous char is a Consonant
-            if (MAATRA_MAP.hasOwnProperty(char) && isConsonant(lastChar)) {
-                // Swap the independent vowel for its maatra
-                const maatra = MAATRA_MAP[char];
-                textDisplay.textContent += maatra;
+            // Special Functions
+            if (char === 'backspace') {
+                textDisplay.innerText = textDisplay.innerText.slice(0, -1);
+                return;
+            }
+            if (char === 'enter') {
+                textDisplay.innerText += '\n';
+                return;
+            }
+            if (char === ' ') {
+                textDisplay.innerText += ' ';
+                return;
+            }
+            if (['cursorLeft', 'cursorRight', 'mode', 'num', 'globe'].includes(char)) {
+                console.log("Function not implemented yet:", char);
+                return;
+            }
+
+            // Smart Vowel Switching
+            const lastChar = textDisplay.innerText.slice(-1);
+            if (MAATRA_MAP[char] !== undefined && isConsonant(lastChar)) {
+                textDisplay.innerText += MAATRA_MAP[char];
             } else {
-                // Normal behavior (Consonants, or Vowels at start of word)
-                textDisplay.textContent += char;
+                textDisplay.innerText += char;
             }
         }
 
-        // --- EVENT LISTENERS ---
-
-        /**
-         * Touch Start: User presses a key.
-         */
-        function onTouchStart(e) {
-            const keyEl = e.target.closest('.keyboard-key');
-            if (!keyEl) return;
-            
-            e.preventDefault(); // Prevent text selection, etc.
-
-            activeKeyElement = keyEl;
-            const key = keyEl.dataset.key;
-            
-            // Find the key data from our map
-            for (const rowKey in keyMap) {
-                const found = keyMap[rowKey].find(k => k.key === key);
-                if (found) {
-                    activeKeyData = found;
-                    break;
-                }
-            }
-
-            if (!activeKeyData) return;
-
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            
-            // Only show preview if there are flick options
-            if (Object.keys(activeKeyData.flicks).length > 1) {
-                showFlickPreview();
-            }
+        function isConsonant(char) {
+            if (!char) return false;
+            const c = char.charCodeAt(0);
+            // Bengali Consonant Range (approx)
+            return (c >= 0x0995 && c <= 0x09B9) || (c >= 0x09DC && c <= 0x09DF);
         }
 
-        /**
-         * Touch Move: User drags their finger.
-         */
-        function onTouchMove(e) {
-            if (!activeKeyElement || !activeKeyData) return;
-            
-            e.preventDefault();
-
-            const deltaX = e.touches[0].clientX - startX;
-            const deltaY = e.touches[0].clientY - startY;
-
-            const direction = getFlickDirection(deltaX, deltaY);
-
-            if (direction !== currentFlickDirection) {
-                updateFlickHighlight(direction);
-            }
-        }
-
-        /**
-         * Touch End: User lifts their finger.
-         */
-        function onTouchEnd(e) {
-            if (!activeKeyElement || !activeKeyData) return;
-
-            e.preventDefault();
-            
-            hideFlickPreview();
-
-            // Final flick direction is `currentFlickDirection`
-            const charToCommit = activeKeyData.flicks[currentFlickDirection];
-            
-            if (charToCommit) {
-                commitText(charToCommit);
-            }
-            
-            // Reset state
-            activeKeyElement = null;
-            activeKeyData = null;
-            startX = 0;
-            startY = 0;
-            currentFlickDirection = 'base';
-        }
-
-        // --- INITIALIZATION ---
-        
-        // Attach event listeners to the whole container for delegation
-        keyboardContainer.addEventListener('touchstart', onTouchStart, { passive: false });
-        keyboardContainer.addEventListener('touchmove', onTouchMove, { passive: false });
-        keyboardContainer.addEventListener('touchend', onTouchEnd, { passive: false });
-        
-        // Prevent context menu on long-press
-        keyboardContainer.addEventListener('contextmenu', e => e.preventDefault());
-
-        // Build the keyboard on load
-        renderKeyboard();
+        // Boot up
+        render();
 
     </script>
 </body>
 </html>
-
