@@ -101,7 +101,19 @@
 
     <script>
         // --- CONFIGURATION ---
-
+        const MAATRA_MAP = {
+            'অ': '',   // No maatra for short 'a' (inherent)
+            'আ': 'া',
+            'ই': 'ি',
+            'ঈ': 'ী',
+            'উ': 'ু',
+            'ঊ': 'ূ',
+            'ঋ': 'ৃ',
+            'এ': 'ে',
+            'ঐ': 'ৈ',
+            'ও': 'ো',
+            'ঔ': 'ৌ'
+        };
         /**
          * This is the core logic map.
          * 'key': The character displayed on the key.
@@ -297,16 +309,44 @@
             return 'base';
         }
 
+        // 2. HELPER: check if a character is a Bengali Consonant
+        function isConsonant(char) {
+            if (!char) return false;
+            const code = char.charCodeAt(0);
+            // Bengali Consonant Range: Ka (0995) to Ha (09B9), plus Rra/Rh/Yya (09DC-09DF)
+            return (code >= 0x0995 && code <= 0x09B9) || (code >= 0x09DC && code <= 0x09DF);
+        }
+        
         /**
          * Appends text to the display or handles special keys.
          */
         function commitText(char) {
             if (char === 'backspace') {
-                // Handle backspace
                 const text = textDisplay.textContent;
+                // Use Array.from to handle emojis/surrogate pairs correctly if needed, 
+                // but slice is fine for basic Bengali
                 textDisplay.textContent = text.slice(0, -1);
-            } else if (char) {
-                // Append the character
+                return;
+            } 
+            
+            if (char === 'enter') {
+                textDisplay.textContent += '\n';
+                return;
+            }
+        
+            if (!char) return;
+            
+            // Get the last character typed
+            const currentText = textDisplay.textContent;
+            const lastChar = currentText.slice(-1);
+        
+            // Check if the input is a Vowel AND the previous char is a Consonant
+            if (MAATRA_MAP.hasOwnProperty(char) && isConsonant(lastChar)) {
+                // Swap the independent vowel for its maatra
+                const maatra = MAATRA_MAP[char];
+                textDisplay.textContent += maatra;
+            } else {
+                // Normal behavior (Consonants, or Vowels at start of word)
                 textDisplay.textContent += char;
             }
         }
