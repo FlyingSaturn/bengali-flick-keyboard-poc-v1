@@ -80,32 +80,33 @@
         // Sidebars are integrated directly into the rows for perfect grid alignment.
         const keyMap = {
             'row1': [
-                { key: '←', type: 'func', action: 'cursorLeft' },   // Left Col
+                { key: '.', type: 'func', action: 'punct' }         // Right Col
                 { key: 'ক', type: 'char', flicks: { base: 'ক', left: 'খ', up: 'গ', right: 'ঘ', down: 'ঙ' } },
                 { key: 'চ', type: 'char', flicks: { base: 'চ', left: 'ছ', up: 'জ', right: 'ঝ', down: 'ঞ' } },
                 { key: 'ট', type: 'char', flicks: { base: 'ট', left: 'ঠ', up: 'ড', right: 'ঢ', down: 'ণ' } },
                 { key: '⌫', type: 'func', action: 'backspace' }     // Right Col
             ],
             'row2': [
-                { key: '→', type: 'func', action: 'cursorRight' },  // Left Col
+                { key: '←', type: 'func', action: 'cursorLeft' },   // Left Col
                 { key: 'অ', type: 'char', flicks: { base: 'অ', left: 'ই', up: 'উ', right: 'এ', down: 'ও' } },
                 { key: '্', type: 'char', flicks: { base: '্', left: 'ৎ', up: 'ং', right: 'ঃ', down: 'ঁ' } },
                 { key: 'আ', type: 'char', flicks: { base: 'আ', left: 'ঈ', up: 'ঊ', right: 'ঐ', down: 'ঔ' } },
-                { key: ' ', type: 'func', label: '␣', action: 'space' } // Right Col (Space)
+                { key: '→', type: 'func', action: 'cursorRight' },  // Right Col
             ],
             'row3': [
                 { key: '123', type: 'func', action: 'num' },        // Left Col
                 { key: 'ত', type: 'char', flicks: { base: 'ত', left: 'থ', up: 'দ', right: 'ধ', down: 'ন' } },
                 { key: 'প', type: 'char', flicks: { base: 'প', left: 'ফ', up: 'ব', right: 'ভ', down: 'ম' } },
                 { key: 'য', type: 'char', flicks: { base: 'য', left: 'র', up: 'ল', right: 'য়', down: 'ঋ' } },
-                { key: '⏎', type: 'func', action: 'enter' }         // Right Col
+                { key: ' ', type: 'func', label: '␣', action: 'space' } // Right Col (Space)
             ],
             'row4': [
                 { key: 'EN', type: 'func', action: 'lang' },        // Left Col
                 { key: 'ক্ষ', type: 'char', flicks: { base: 'ক্ষ', left: 'ত্র', up: 'জ্ঞ', right: 'র্', down: null } },
                 { key: 'হ', type: 'char', flicks: { base: 'হ', left: 'শ', up: 'ষ', right: 'স', down: '়' } },
                 { key: '।', type: 'char', flicks: { base: '।', left: '.', up: '?', right: ',', down: '-' } },
-                { key: '.', type: 'func', action: 'punct' }         // Right Col
+                { key: '⏎', type: 'func', action: 'enter' }         // Right Col
+                
             ]
         };
 
