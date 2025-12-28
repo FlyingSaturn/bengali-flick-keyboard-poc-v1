@@ -188,3 +188,74 @@
                         const char = activeKey.flicks[dir] || activeKey.flicks.base;
                         handleInput(char);
                     } else {
+                        // Function key tap
+                        handleInput(null, activeKey.action);
+                    }
+                }
+                
+                hidePreview();
+                activeKey = null;
+            });
+        }
+
+        function getDirection(dx, dy) {
+            if (Math.abs(dx) < THRESHOLD && Math.abs(dy) < THRESHOLD) return 'base';
+            if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'right' : 'left';
+            return dy > 0 ? 'down' : 'up';
+        }
+
+        // --- PREVIEW LOGIC ---
+        function showPreview(el, data) {
+            const rect = el.getBoundingClientRect();
+            // Center the pop-up relative to the key
+            preview.style.left = (rect.left + rect.width / 2) + 'px';
+            preview.style.top = (rect.top) + 'px'; 
+            preview.style.display = 'grid';
+
+            // Fill content (This is where the user finally sees the hints)
+            pCells.base.innerText = data.flicks.base;
+            pCells.up.innerText = data.flicks.up || '';
+            pCells.left.innerText = data.flicks.left || '';
+            pCells.right.innerText = data.flicks.right || '';
+            pCells.down.innerText = data.flicks.down || '';
+
+            highlightPreview('base');
+        }
+
+        function highlightPreview(dir) {
+            Object.values(pCells).forEach(c => c.classList.remove('active'));
+            if (pCells[dir] && pCells[dir].innerText) pCells[dir].classList.add('active');
+        }
+
+        function hidePreview() {
+            preview.style.display = 'none';
+        }
+
+        // --- INPUT LOGIC ---
+        function handleInput(char, action) {
+            // Function Keys
+            if (action === 'backspace') return textDisplay.innerText = textDisplay.innerText.slice(0, -1);
+            if (action === 'space') return textDisplay.innerText += ' ';
+            if (action === 'enter') return textDisplay.innerText += '\n';
+            if (action === 'punct') return textDisplay.innerText += '.';
+            if (char) {
+                // Smart Vowels
+                const last = textDisplay.innerText.slice(-1);
+                if (MAATRA_MAP[char] !== undefined && isConsonant(last)) {
+                    textDisplay.innerText += MAATRA_MAP[char];
+                } else {
+                    textDisplay.innerText += char;
+                }
+            }
+        }
+
+        function isConsonant(char) {
+            if (!char) return false;
+            const c = char.charCodeAt(0);
+            return (c >= 0x0995 && c <= 0x09B9) || (c >= 0x09DC && c <= 0x09DF);
+        }
+
+        render();
+    </script>
+</body>
+</html>
