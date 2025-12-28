@@ -80,18 +80,18 @@
         // Sidebars are integrated directly into the rows for perfect grid alignment.
         const keyMap = {
             'row1': [
-                { key: '.', type: 'func', action: 'punct' },         // Right Col
+                { key: '🢐¦🢒', type: 'func', action: 'ZWNJ' },         // Right Col
                 { key: 'ক', type: 'char', flicks: { base: 'ক', left: 'খ', up: 'গ', right: 'ঘ', down: 'ঙ' } },
                 { key: 'চ', type: 'char', flicks: { base: 'চ', left: 'ছ', up: 'জ', right: 'ঝ', down: 'ঞ' } },
                 { key: 'ট', type: 'char', flicks: { base: 'ট', left: 'ঠ', up: 'ড', right: 'ঢ', down: 'ণ' } },
                 { key: '⌫', type: 'func', action: 'backspace' }     // Right Col
             ],
             'row2': [
-                { key: '←', type: 'func', action: 'cursorLeft' },   // Left Col
+                { key: '🢐', type: 'func', action: 'cursorLeft' },   // Left Col
                 { key: 'অ', type: 'char', flicks: { base: 'অ', left: 'ই', up: 'উ', right: 'এ', down: 'ও' } },
                 { key: '্', type: 'char', flicks: { base: '্', left: 'ৎ', up: 'ং', right: 'ঃ', down: 'ঁ' } },
                 { key: 'আ', type: 'char', flicks: { base: 'আ', left: 'ঈ', up: 'ঊ', right: 'ঐ', down: 'ঔ' } },
-                { key: '→', type: 'func', action: 'cursorRight' },  // Right Col
+                { key: '🢒', type: 'func', action: 'cursorRight' },  // Right Col
             ],
             'row3': [
                 { key: '123', type: 'func', action: 'num' },        // Left Col
@@ -239,6 +239,7 @@
             if (action === 'space') return textDisplay.innerText += ' ';
             if (action === 'enter') return textDisplay.innerText += '\n';
             if (action === 'punct') return textDisplay.innerText += '.';
+            if (action === 'ZWNJ') return textDisplay.innerText += '\u{200C}';
             if (char) {
                 // Smart Vowels
                 const last = textDisplay.innerText.slice(-1);
