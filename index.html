@@ -113,45 +113,52 @@
         const keyMap = {
     // ROW 1: The Hard Consonants
     'row1': [
-        // Block 1: Ka Group
-        { key: 'ক', flicks: { base: 'ক', left: 'খ', right: 'ঘ', up: 'গ', down: 'ঙ' } },
-        // Block 2: Cha Group
-        { key: 'চ', flicks: { base: 'চ', left: 'ছ', right: 'ঝ', up: 'জ', down: 'ঞ' } },
-        // Block 3: Tta Group
-        { key: 'ট', flicks: { base: 'ট', left: 'ঠ', right: 'ঢ', up: 'ড', down: 'ণ' } },
-        // Block 4: Ta Group
-        { key: 'ত', flicks: { base: 'ত', left: 'থ', right: 'ধ', up: 'দ', down: 'ন' } },
-        // Block 5: Pa Group
-        { key: 'প', flicks: { base: 'প', left: 'ফ', right: 'ভ', up: 'ব', down: 'ম' } }
+        // Ka Group
+        { key: 'ক', flicks: { base: 'ক', left: 'খ', up: 'গ', right: 'ঘ', down: 'ঙ' } },
+        // Cha Group
+        { key: 'চ', flicks: { base: 'চ', left: 'ছ', up: 'জ', right: 'ঝ', down: 'ঞ' } },
+        // Tta Group
+        { key: 'ট', flicks: { base: 'ট', left: 'ঠ', up: 'ড', right: 'ঢ', down: 'ণ' } }
     ],
 
     // ROW 2: Vowels & Soft Consonants
     'row2': [
-        // Block 6: Short Vowels
-        { key: 'অ', flicks: { base: 'অ', left: 'ই', right: 'এ', up: 'উ', down: 'ও' } },
-        // Block 7: Long Vowels
-        { key: 'আ', flicks: { base: 'আ', left: 'ঈ', right: 'ঐ', up: 'ঊ', down: 'ঔ' } },
-        // Block 8: Y-R-L-V
-        { key: 'য', flicks: { base: 'য', left: 'র', right: 'য়', up: 'ল', down: 'ব' } },
-        // Block 9: Ha + Sibilants
-        { key: 'হ', flicks: { base: 'হ', left: 'শ', right: 'স', up: 'ষ', down: '়' } }, // Down is Nukta
-        // Block 10: Modifiers
-        { key: '্', flicks: { base: '্', left: 'ৎ', right: 'ং', up: 'ঁ', down: 'ঃ' } } // Left is Khanda Ta
+        // Short Vowels
+        { key: 'অ', flicks: { base: 'অ', left: 'ই', up: 'উ', right: 'এ', down: 'ও' } },
+        // Modifiers
+        { key: '্', flicks: { base: '্', left: 'ৎ', up: 'ং', right: 'ঃ', down: 'ঁ' } }, // Left is Khanda Ta
+        // Long Vowels
+        { key: 'আ', flicks: { base: 'আ', left: 'ঈ', up: 'ঊ', right: 'ঐ', down: 'ঔ' } } 
     ],
 
     // ROW 3: Utility & Power
     'row3': [
-        // Block 11: Power Block (Conjuncts)
-        { key: 'ক্ষ', flicks: { base: 'ক্ষ', left: 'জ্ঞ', right: 'র্', up: 'ত্র', down: '৳' } }, // Down is Wildcard (Taka)
-        // Block 12: Punctuation
-        { key: '।', flicks: { base: '।', left: '.', right: ',', up: '?', down: '-' } },
+        // Ta Group
+        { key: 'ত', flicks: { base: 'ত', left: 'থ', up: 'দ', right: 'ধ', down: 'ন' } },
+        // Pa Group
+        { key: 'প', flicks: { base: 'প', left: 'ফ', up: 'ব', right: 'ভ', down: 'ম' } },
+        // Y-R-L-V
+        { key: 'য', flicks: { base: 'য', left: 'র', up: 'ল', right: 'য়', down: 'ঋ' } }
+/*
         // SPACE
         { key: 'SPACE', width: '1.5', flicks: { base: ' ' } },
         // Backspace
         { key: '⌫', flicks: { base: 'backspace' } },
         // Enter
         { key: '⏎', flicks: { base: 'enter' } }
+        */
+    ],
+
+    'row4': [
+        // Conjuncts
+        { key: 'ক্ষ', flicks: { base: 'ক্ষ', left: 'ত্র', up: 'জ্ঞ', right: 'র্', down: null } },
+        // { key: 'ক্ষ', flicks: { base: 'ক্ষ', left: 'জ্ঞ', up: 'ত্র', right: 'র্', down: 'ৱ' } },
+        // Ha + Sibilants
+        { key: 'হ', flicks: { base: 'হ', left: 'শ', up: 'ষ', right: 'স', down: '়' } }, // Down is Nukta        
+        // Block 12: Punctuation
+        { key: '।', flicks: { base: '।', left: '.', up: '?', right: ',', down: '-' } },
     ]
+    
 };
 
 
