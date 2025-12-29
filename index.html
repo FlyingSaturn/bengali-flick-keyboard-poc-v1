@@ -118,7 +118,7 @@
             ]
         };
 
-        const MAATRA_MAP = { 'অ':'', 'আ':'া', 'ই':'ি', 'ঈ':'ী', 'উ':'ু', 'ঊ':'ূ', 'ঋ':'ৃ', 'এ':'ে', 'ঐ':'ৈ', 'ও':'ো', 'ঔ':'ৌ' };
+        const MAATRA_MAP = { 'অ':'', 'আ':'া', 'ই':'ি', 'ঈ':'ী', 'উ':'ু', 'ঊ':'ূ', 'ঋ':'ৃ', 'এ':'ে', 'ঐ':'ৈ', 'ও':'ো', 'ঔ':'ৌ', 'ং':'ং', 'ঃ':'ঃ', 'ঁ':'ঁ'};
 
         const NUKTA_MAP = {
     'ড': 'ড়', // The big one (Dal -> Rra)
@@ -323,7 +323,7 @@ function handleInput(char, action) {
 
     // --- B. NUKTA LOGIC (The Fix) ---
     // If the input char is a Nukta (Bengali '়' or Devanagari '़')
-    if (char === '়' || char === '़') {
+    if (char === '়') {
         const charBefore = currentVal.slice(start - 1, start);
 
         // Check if the previous char has a fused form
