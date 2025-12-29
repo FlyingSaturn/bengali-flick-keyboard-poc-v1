@@ -273,16 +273,6 @@ function showPreview(el, data) {
     highlightPreview('base');
 }
 
-    // 3. Fill the cells
-    pCells.base.innerText  = getLabel(data.flicks.base);
-    pCells.up.innerText    = getLabel(data.flicks.up);
-    pCells.left.innerText  = getLabel(data.flicks.left);
-    pCells.right.innerText = getLabel(data.flicks.right);
-    pCells.down.innerText  = getLabel(data.flicks.down);
-
-    highlightPreview('base');
-}
-
         function highlightPreview(dir) {
             Object.values(pCells).forEach(c => c.classList.remove('active'));
             if (pCells[dir] && pCells[dir].innerText) pCells[dir].classList.add('active');
