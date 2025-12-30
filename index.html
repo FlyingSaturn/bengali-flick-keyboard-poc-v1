@@ -123,6 +123,7 @@
         const NUKTA_MAP = {
     'ড': 'ড়', // The big one (Dal -> Rra)
     'ঢ': 'ঢ়', // The other big one (Ddha -> Rhha)
+    'য': 'য়', // Just in case
 };
         // --- DOM ELEMENTS ---
         const container = document.getElementById('keyboard-container');
@@ -135,7 +136,15 @@
             left: preview.querySelector('.area-left'),
             right: preview.querySelector('.area-right'),
         };
+// 1. When touching YOUR keys, hide system keyboard
+container.addEventListener('touchstart', () => {
+    textDisplay.inputMode = 'none';
+}, {capture: true}); // Capture phase ensures it runs before focus
 
+// 2. When touching the TEXTBOX, allow system keyboard
+textDisplay.addEventListener('touchstart', () => {
+    textDisplay.inputMode = 'text'; // Or 'decimal', 'email' etc.
+});
         // --- RENDER ENGINE ---
         function render() {
             container.innerHTML = '';
