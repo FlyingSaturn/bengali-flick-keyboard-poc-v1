@@ -69,6 +69,16 @@
 ></textarea>
         <div class="text-center text-gray-400 text-sm mt-4 mb-2">Flick to type • Tap center for base</div>
     </div>
+    <div class="bg-gray-200 dark:bg-gray-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] w-full flex flex-col">
+    
+    <div id="resize-handle" class="w-full h-8 flex items-center justify-center cursor-row-resize touch-none active:bg-gray-300 dark:active:bg-gray-700">
+        <div class="w-12 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+    </div>
+
+    <div id="keyboard-container" class="w-full max-w-2xl mx-auto" style="height: 320px;">
+    </div>
+
+</div>
 
     <div id="flick-preview">
         <div class="flick-cell area-up"></div>
@@ -355,7 +365,49 @@ function handleInput(char, action) {
             const c = char.charCodeAt(0);
             return (c >= 0x0995 && c <= 0x09B9) || (c >= 0x09DC && c <= 0x09DF);
         }
+// --- RESIZE ENGINE ---
+const resizer = document.getElementById('resize-handle');
+const keyboard = document.getElementById('keyboard-container');
+const MIN_HEIGHT = 200; // Don't let it get too small
+const MAX_HEIGHT = 600; // Don't let it take over the screen
 
+// 1. Load Saved Height on Startup
+const savedHeight = localStorage.getItem('kb_height');
+if (savedHeight) {
+    keyboard.style.height = savedHeight + 'px';
+}
+
+// 2. Physics Logic
+let startY, startHeight;
+
+resizer.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Stop scrolling
+    startY = e.touches[0].clientY;
+    startHeight = parseInt(window.getComputedStyle(keyboard).height, 10);
+}, { passive: false });
+
+resizer.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const currentY = e.touches[0].clientY;
+    const dy = currentY - startY;
+    
+    // Calculate new height (Inverse logic: Pulling UP decreases Y, but increases Height)
+    // Wait: If I pull UP (Y decreases), the keyboard gets TALLER.
+    // dy is negative when going up. So we subtract dy.
+    let newHeight = startHeight - dy;
+
+    // Clamp values
+    if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT;
+    if (newHeight > MAX_HEIGHT) newHeight = MAX_HEIGHT;
+
+    keyboard.style.height = newHeight + 'px';
+}, { passive: false });
+
+resizer.addEventListener('touchend', () => {
+    // 3. Save Preference
+    localStorage.setItem('kb_height', keyboard.style.height.replace('px', ''));
+});
+        
         render();
     </script>
 </body>
